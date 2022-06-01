@@ -79,6 +79,10 @@ private:
 signals:
     void DrawData(uint16_t);
     void SerialConnection(bool);
+    void Clear_Signal();
+
+private slots:
+    void Clear_Slot();
 public slots:
     void triger_connect(bool);
 };

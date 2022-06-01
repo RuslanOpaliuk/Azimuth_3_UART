@@ -169,6 +169,7 @@ void MainWindow::initActionsConnections()
     connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionConfigure, SIGNAL(triggered()), settings, SLOT(show()));
     connect(ui->actionClear, SIGNAL(triggered()), console, SLOT(clear()));
+    connect(ui->actionClear, SIGNAL(triggered()), this, SLOT(Clear_Slot()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
@@ -183,4 +184,9 @@ void MainWindow::triger_connect(bool trigger)
     {
         closeSerialPort();
     }
+}
+
+void MainWindow::Clear_Slot()
+{
+    emit Clear_Signal();
 }

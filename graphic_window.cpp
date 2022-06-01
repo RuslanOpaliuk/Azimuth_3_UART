@@ -38,3 +38,8 @@ void Graphic_Window::Build_Graphic_Center(uint16_t voice)
     Graphic::Write_Time(count);
     count++;
 }
+
+void Graphic_Window::Clear_Data()
+{
+    Graphic::Clear_Slot();
+}

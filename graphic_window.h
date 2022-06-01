@@ -14,6 +14,7 @@ public slots:
     void Build_Graphic_Left(uint16_t voice);
     void Build_Graphic_Right(uint16_t voice);
     void Build_Graphic_Center(uint16_t voice);
+    void Clear_Data();
 };
 
 #endif // GRAPHIC_WINDOW_H
