@@ -144,7 +144,7 @@ void MainWindow::about()
 void MainWindow::readData()
 {
     QByteArray data = serial->readAll();
-    console->putData(data);
+  //  console->putData(data);
 
     uint8_t z1 = data[0];
 
