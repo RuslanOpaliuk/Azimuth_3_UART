@@ -22,4 +22,6 @@ Main_Window::Main_Window()
     connect(w0, SIGNAL(DrawData(uint16_t)), GraphWindow, SLOT(Build_Graphic_Left(uint16_t)));
     connect(w1, SIGNAL(DrawData(uint16_t)), GraphWindow, SLOT(Build_Graphic_Right(uint16_t)));
     connect(w2, SIGNAL(DrawData(uint16_t)), GraphWindow, SLOT(Build_Graphic_Center(uint16_t)));
+
+    connect(w0, SIGNAL(SerialConnection(bool)), w1, SLOT(triger_connect(bool)));
 }

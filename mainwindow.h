@@ -78,6 +78,9 @@ private:
 
 signals:
     void DrawData(uint16_t);
+    void SerialConnection(bool);
+public slots:
+    void triger_connect(bool);
 };
 
 #endif // MAINWINDOW_H

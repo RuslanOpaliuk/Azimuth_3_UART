@@ -103,6 +103,7 @@ void MainWindow::openSerialPort()
                                        .arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits)
                                        .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl));
 
+            emit SerialConnection(true);
         } else {
             serial->close();
             QMessageBox::critical(this, tr("Error"), serial->errorString());
@@ -126,6 +127,7 @@ void MainWindow::closeSerialPort()
     ui->actionDisconnect->setEnabled(false);
     ui->actionConfigure->setEnabled(true);
     ui->statusBar->showMessage(tr("Disconnected"));
+    emit SerialConnection(false);
 }
 //! [5]
 
@@ -145,7 +147,6 @@ void MainWindow::readData()
     console->putData(data);
 
     uint8_t z1 = data[0];
-    uint8_t z2 = data[1];
 
     emit DrawData(z1);
 }
@@ -170,4 +171,16 @@ void MainWindow::initActionsConnections()
     connect(ui->actionClear, SIGNAL(triggered()), console, SLOT(clear()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+}
+
+void MainWindow::triger_connect(bool trigger)
+{
+    if (true == trigger)
+    {
+        openSerialPort();
+    }
+    else
+    {
+        closeSerialPort();
+    }
 }
