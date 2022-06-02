@@ -14,6 +14,7 @@ SOURCES += \
     Graphic/Graphic_Widget.cpp \
     Graphic/graphic.cpp \
     graphic_window.cpp \
+    ll_protocol/ll_protocol.c \
     main.cpp \
     main_window.cpp \
     mainwindow.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     Graphic/Graphic_Widget.h \
     Graphic/graphic.h \
     graphic_window.h \
+    ll_protocol/ll_protocol.h \
     main_window.h \
     mainwindow.h \
     settingsdialog.h \

@@ -44,6 +44,7 @@
 #include <QPixmap>
 #include <QFile>
 #include <QTextStream>
+#include <ll_protocol/ll_protocol.h>
 
 //! [0]
 MainWindow::MainWindow(QWidget *parent) :
@@ -146,9 +147,23 @@ void MainWindow::readData()
     QByteArray data = serial->readAll();
   //  console->putData(data);
 
-    uint8_t z1 = data[0];
+    size_t remainder = 1;
 
-    emit DrawData(z1);
+    while(remainder > 0 && remainder < (data.size() + (size_t)1))
+    {
+        ll_deserialize((uint8_t*)data.data_ptr(),
+                       data.size(),
+                       &remainder,
+                       this,
+                       [](uint8_t* message, void* context)
+                       {
+                            uint16_t tmp = *((uint16_t*)message);
+                            MainWindow* w = (MainWindow*)context;
+                            //not working (program crashes)
+                            w->DrawData(tmp);
+                       },
+                       NULL);
+    }
 }
 //! [7]
 
