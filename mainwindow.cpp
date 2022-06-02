@@ -47,11 +47,12 @@
 #include <ll_protocol/ll_protocol.h>
 
 //! [0]
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QString title, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle(title);
 
     console = new Console;
     console->setEnabled(false);

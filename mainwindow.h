@@ -57,7 +57,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QString title, QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
