@@ -305,9 +305,14 @@ void Graphic::Find_Point_Slot(int Numb)
 
 void Graphic::Send_Find_Slot()
 {
-    emit Find_Point_Signal(Number);
-
-    double Cents = (double)Number/GraphW_Vector[0]->Data_Size();
-
-    emit Find_Text_Signal(Cents);
+    if(GraphW_Vector[0]->Data_Size() < graf_lenght*Data_Spinbox->value())
+    {
+        Data_Slider->setEnabled(false);
+    }
+    else
+    {
+        Data_Slider->setEnabled(true);
+        Data_Slider->setRange(graf_lenght, GraphW_Vector[0]->Data_Size());
+        Data_Slider->setValue(GraphW_Vector[0]->Data_Size());
+    }
 }
