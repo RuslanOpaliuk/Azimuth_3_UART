@@ -65,6 +65,8 @@ private:
 
     QLabel       *Data_label,       *Data_Vlabel;
     QLabel       *cData_label,      *cData_Vlabel;
+    QLabel       *cSize_label,      *cSize_Vlabel;
+    QLabel       *cCount_label,     *cCount_Vlabel;
     QLabel       *Average_label,    *Average_Vlabel;
     QLabel       *RMS_label,        *RMS_Vlabel;
 

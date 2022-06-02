@@ -51,15 +51,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-//! [0]
     ui->setupUi(this);
 
     console = new Console;
     console->setEnabled(false);
     setCentralWidget(console);
-//! [1]
+
     serial = new QSerialPort(this);
-//! [1]
+
     settings = new SettingsDialog;
 
     ui->actionConnect->setEnabled(true);
@@ -69,10 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initActionsConnections();
 
-    connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
-            SLOT(handleError(QSerialPort::SerialPortError)));
-
-//! [2]
+    connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)));
     connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
 }
 //! [3]
@@ -149,7 +145,7 @@ void MainWindow::readData()
 
     size_t remainder = 1;
 
-    while(remainder > 0 && remainder < (data.size() + (size_t)1))
+  /*  while(remainder > 0 && remainder < (data.size() + (size_t)1))
     {
         ll_deserialize((uint8_t*)data.data_ptr(),
                        data.size(),
@@ -163,7 +159,9 @@ void MainWindow::readData()
                             w->DrawData(tmp);
                        },
                        NULL);
-    }
+    }*/
+
+    emit DrawData(data[0]);
 }
 //! [7]
 

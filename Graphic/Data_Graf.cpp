@@ -32,6 +32,16 @@ Data_Graf::Data_Graf(quint32 L, quint32 H, qint16 Min_V, qint16 Max_V, const QSt
     cData_Vlabel  = new QLabel("?");
     cData_Vlabel->setFont(VFont);
 
+    cSize_label= new QLabel("Size: ");
+        cSize_label->setAlignment(Qt::AlignRight);
+    cSize_Vlabel  = new QLabel("?");
+    cSize_Vlabel->setFont(VFont);
+
+    cCount_label  = new QLabel("Counter: ");
+        cCount_label->setAlignment(Qt::AlignRight);
+    cCount_Vlabel  = new QLabel("?");
+    cCount_Vlabel->setFont(VFont);
+
     Average_label = new QLabel(tr("Average:"));
         Average_label->setAlignment(Qt::AlignRight);
     Average_Vlabel = new QLabel("?");
@@ -47,6 +57,10 @@ Data_Graf::Data_Graf(quint32 L, quint32 H, qint16 Min_V, qint16 Max_V, const QSt
           qhb->addWidget(Data_Vlabel);
           qhb->addWidget(cData_label);
           qhb->addWidget(cData_Vlabel);
+          qhb->addWidget(cSize_label);
+          qhb->addWidget(cSize_Vlabel);
+          qhb->addWidget(cCount_label);
+          qhb->addWidget(cCount_Vlabel);
           qhb->addWidget(Average_label);
           qhb->addWidget(Average_Vlabel);
           qhb->addWidget(RMS_label);
@@ -181,6 +195,7 @@ void Data_Graf::animate(QVector<float> *Data_V, QVector<char> *Status_V)
     {
         float Data = D_Vector.Data[Size - 1];
         Data_Vlabel->setText(QString::number(Data));
+        cSize_Vlabel->setText(QString::number(Size));
 
         D_Vector.Average = double((D_Vector.Average*(double)(D_Vector.Size - 1) + (double)Data)/(double)D_Vector.Size);
 
@@ -204,17 +219,17 @@ void Data_Graf::Change_Shag(const int S)
 void Data_Graf::mousePressEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
-        emit Press_Cursor_Signal(event->pos());
+        Press_Cursor_Slot(event->pos());
 }
 
 void Data_Graf::mouseMoveEvent(QMouseEvent *event)
 {
-    emit Move_Cursor_Signal(event->pos());
+     Move_Cursor_Slot(event->pos());
 }
 
 void Data_Graf::mouseReleaseEvent(QMouseEvent *event)
 {
-    emit Release_Cursor_Signal(event->pos());
+   Release_Cursor_Slot(event->pos());
 }
 
 void Data_Graf::Press_Cursor_Slot(const QPoint K)
@@ -278,6 +293,7 @@ void Data_Graf::Move_Cursor()
         Data_Number = Kursor_Point.x()*Shag + Size - graf_lenght*Shag;
 
     cData_Vlabel->setText(QString::number(D_Vector.Data[Data_Number-1]));
+    cCount_Vlabel->setText(QString::number(Data_Number));
 
     emit Data_Number_Signal(Data_Number);
 }
