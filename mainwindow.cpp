@@ -144,25 +144,21 @@ void MainWindow::readData()
     QByteArray data = serial->readAll();
   //  console->putData(data);
 
-    size_t remainder = 1;
-
-  /*  while(remainder > 0 && remainder < (data.size() + (size_t)1))
+    ll_message_info_t msg_info =
     {
-        ll_deserialize((uint8_t*)data.data_ptr(),
-                       data.size(),
-                       &remainder,
-                       this,
-                       [](uint8_t* message, void* context)
-                       {
-                            uint16_t tmp = *((uint16_t*)message);
-                            MainWindow* w = (MainWindow*)context;
-                            //not working (program crashes)
-                            w->DrawData(tmp);
-                       },
-                       NULL);
-    }*/
+        .size = 2,
+        .begin_byte = 0xAA,
+        .reject_byte = 0xCC,
+        .end_byte = 0xBB
+    };
 
-    emit DrawData(data[0]);
+    size_t remainder;
+    uint16_t tmp;
+
+    if(LL_STATUS_SUCCESS == ll_deserialize(msg_info, (uint8_t*)data.data_ptr(), data.size(), (uint8_t*)&tmp, &remainder))
+    {
+        emit DrawData(tmp);
+    }
 }
 //! [7]
 
