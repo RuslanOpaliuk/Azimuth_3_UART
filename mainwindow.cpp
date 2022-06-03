@@ -146,18 +146,19 @@ void MainWindow::readData()
 
     ll_message_info_t msg_info =
     {
-        .size = 2,
+        .size = 6,
         .begin_byte = 0xAA,
         .reject_byte = 0xCC,
         .end_byte = 0xBB
     };
 
     size_t remainder;
-    uint16_t tmp;
+    uint16_t tmp[3];
 
     if(LL_STATUS_SUCCESS == ll_deserialize(msg_info, (uint8_t*)data.data_ptr(), data.size(), (uint8_t*)&tmp, &remainder))
     {
-        emit DrawData(tmp);
+        emit DrawData(tmp[0]);
+        //implement emitting tmp[1] and tmp[2]
     }
 }
 //! [7]
