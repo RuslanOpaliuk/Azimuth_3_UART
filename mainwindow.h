@@ -77,7 +77,9 @@ private:
     QSerialPort *serial;
 
 signals:
-    void DrawData(uint16_t);
+    void DrawDataLeft(uint16_t);
+    void DrawDataCenter(uint16_t);
+    void DrawDataRight(uint16_t);
     void SerialConnection(bool);
     void Clear_Signal();
 

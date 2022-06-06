@@ -2,9 +2,9 @@
 
 Graphic_Window::Graphic_Window()
 {
-    Graphic::Add_Graphic(0, 0xFFFF, "Left");
-    Graphic::Add_Graphic(0, 0xFFFF, "Right");
-    Graphic::Add_Graphic(0, 0xFFFF, "Center");
+    Graphic::Add_Graphic(0, 0xFFF, "Left");
+    Graphic::Add_Graphic(0, 0xFFF, "Right");
+    Graphic::Add_Graphic(0, 0xFFF, "Center");
 
    Graphic::Add_Time_Label();
 }
