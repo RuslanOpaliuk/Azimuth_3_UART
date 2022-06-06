@@ -155,11 +155,11 @@ void MainWindow::readData()
     size_t remainder;
     uint16_t tmp[3];
 
-//    if(LL_STATUS_SUCCESS == ll_deserialize(msg_info, (uint8_t*)data.data_ptr(), data.size(), (uint8_t*)&tmp, &remainder))
+    if(LL_STATUS_SUCCESS == ll_deserialize(msg_info, (uint8_t*)data.data_ptr(), data.size(), (uint8_t*)&tmp, &remainder))
     {
         emit DrawDataLeft(tmp[0]);
-        emit DrawDataCenter(tmp[1]);
-        emit DrawDataRight(tmp[2]);
+        emit DrawDataCenter(tmp[2]);
+        emit DrawDataRight(tmp[1]);
         //implement emitting tmp[1] and tmp[2]
     }
 }
