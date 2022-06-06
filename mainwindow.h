@@ -57,7 +57,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QString title, QWidget *parent = 0);
+    explicit MainWindow(QString title, Graphic_Window *GraphW, QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
@@ -70,6 +70,7 @@ private slots:
 
 private:
     void initActionsConnections();
+    Graphic_Window *GraphWindow;
 private:
     Ui::MainWindow *ui;
     Console *console;
