@@ -157,18 +157,13 @@ void MainWindow::readData()
     size_t remainder;
     uint16_t tmp[3];
 
-    if(LL_STATUS_SUCCESS == ll_deserialize(msg_info, (uint8_t*)data.data_ptr(), data.size(), (uint8_t*)&tmp, &remainder))
+    if(LL_STATUS_SUCCESS == ll_deserialize(msg_info, (uint8_t*)data.data(), data.size(), (uint8_t*)&tmp, &remainder))
     {
         GraphWindow->Build_Graphic_Left(tmp[0]);
         GraphWindow->Build_Graphic_Center(tmp[2]);
         GraphWindow->Build_Graphic_Right(tmp[1]);
         //implement emitting tmp[1] and tmp[2]
 
-    }
-    else {
-        GraphWindow->Build_Graphic_Left(0);
-        GraphWindow->Build_Graphic_Center(0);
-        GraphWindow->Build_Graphic_Right(0);
     }
 }
 //! [7]
