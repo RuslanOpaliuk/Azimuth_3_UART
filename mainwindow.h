@@ -38,8 +38,8 @@
 #include <QtCore/QtGlobal>
 #include <QMainWindow>
 #include <QtSerialPort/QSerialPort>
-
-#include "graphic_window.h"
+#include <ll_protocol/ll_protocol.h>
+#include <TextEditor.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -57,7 +57,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QString title, Graphic_Window *GraphW, QWidget *parent = 0);
+    explicit MainWindow(QString title, QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
@@ -65,15 +65,18 @@ private slots:
     void closeSerialPort();
     void about();
     void readData();
+    void saveData();
 
     void handleError(QSerialPort::SerialPortError error);
 
 private:
     void initActionsConnections();
-    Graphic_Window *GraphWindow;
+    QByteArray qByte_less;
 private:
     Ui::MainWindow *ui;
     Console *console;
+    TextEditor *textEditor;
+
     SettingsDialog *settings;
     QSerialPort *serial;
 

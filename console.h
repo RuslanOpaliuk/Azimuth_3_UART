@@ -38,6 +38,7 @@
 #include <QPlainTextEdit>
 #include <QString>
 #include <QFile>
+#include <QScrollBar>
 
 class Console : public QPlainTextEdit
 {
@@ -53,6 +54,7 @@ public:
     explicit Console(QWidget *parent = 0);
 
     void putData(const QByteArray &data);
+    void putUint16(const uint16_t *data);
 
     void setLocalEchoEnabled(bool set);
 
@@ -65,6 +67,8 @@ protected:
 private:
     bool localEchoEnabled;
     QFile Save_File;
+    QScrollBar *bar;
+
 };
 
 #endif // CONSOLE_H

@@ -36,7 +36,7 @@
 #include "version.h"
 #include <QSettings>
 
-#include "main_window.h"
+#include "mainwindow.h"
 #include "console.h"
 
 int main(int argc, char *argv[])
@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
 
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
-    Main_Window *MW = new Main_Window();
-    MW->show();
+    MainWindow *w0 = new MainWindow("Window 0");
+    w0->show();
 
     return a.exec();
 }

@@ -34,7 +34,6 @@
 
 #include "console.h"
 
-#include <QScrollBar>
 #include <QtCore/QDebug>
 #include <QTime>
 #include <QDate>
@@ -44,7 +43,7 @@ Console::Console(QWidget *parent)
     : QPlainTextEdit(parent)
     , localEchoEnabled(false)
 {
-    document()->setMaximumBlockCount(100);
+    //document()->setMaximumBlockCount(100);
     QPalette p = palette();
     p.setColor(QPalette::Base, Qt::black);
     p.setColor(QPalette::Text, Qt::green);
@@ -53,6 +52,8 @@ Console::Console(QWidget *parent)
     QString date = QDate::currentDate().toString("yyyy.MM.dd");
     QString time = QTime::currentTime().toString("hh:mm");
     QString fileName = date + "_" + time + ".ll";
+
+    bar = verticalScrollBar();
 
     Save_File.setFileName(fileName);
     if (!Save_File.open(QIODevice::WriteOnly))
@@ -65,7 +66,7 @@ void Console::putData(const QByteArray &data)
 {
     insertPlainText(QString(data));
 
-    QScrollBar *bar = verticalScrollBar();
+
     bar->setValue(bar->maximum());
 
  //   Save_File.write(data);
@@ -73,6 +74,16 @@ void Console::putData(const QByteArray &data)
  //   emit DrawData_Left(data[0]);
  //   emit DrawData_Right(data[2]);
  //   emit DrawData_Center(data[4]);
+}
+
+void Console::putUint16(const uint16_t *data)
+{
+    insertPlainText(QString::number(data[0]) + " ");
+    insertPlainText(QString::number(data[1]) + " ");
+    insertPlainText(QString::number(data[2]) + " ");
+    insertPlainText("\n");
+
+    bar->setValue(bar->maximum());
 }
 
 void Console::setLocalEchoEnabled(bool set)

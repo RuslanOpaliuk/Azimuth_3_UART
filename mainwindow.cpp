@@ -44,12 +44,11 @@
 #include <QPixmap>
 #include <QFile>
 #include <QTextStream>
-#include <ll_protocol/ll_protocol.h>
+#include <QFileDialog>
 
 //! [0]
-MainWindow::MainWindow(QString title, Graphic_Window *GraphW, QWidget *parent) :
+MainWindow::MainWindow(QString title, QWidget *parent) :
     QMainWindow(parent),
-    GraphWindow(GraphW),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -57,10 +56,13 @@ MainWindow::MainWindow(QString title, Graphic_Window *GraphW, QWidget *parent) :
 
     console = new Console;
     console->setEnabled(false);
-    setCentralWidget(console);
+
+    textEditor = new TextEditor();
+
+    setCentralWidget(textEditor);
+    //setCentralWidget(console);
 
     serial = new QSerialPort(this);
-
     settings = new SettingsDialog;
 
     ui->actionConnect->setEnabled(true);
@@ -72,6 +74,7 @@ MainWindow::MainWindow(QString title, Graphic_Window *GraphW, QWidget *parent) :
 
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)));
     connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
+
 }
 //! [3]
 
@@ -121,7 +124,7 @@ void MainWindow::openSerialPort()
 void MainWindow::closeSerialPort()
 {
     serial->close();
-    console->setEnabled(false);
+    //console->setEnabled(false);
     ui->actionConnect->setEnabled(true);
     ui->actionDisconnect->setEnabled(false);
     ui->actionConfigure->setEnabled(true);
@@ -138,13 +141,11 @@ void MainWindow::about()
                           "using Qt, with a menu bar, toolbars, and a status bar."));
 }
 
-#include <stdio.h>
-
-//! [7]
 void MainWindow::readData()
 {
     QByteArray data = serial->readAll();
-    console->putData(data);
+
+    qByte_less += data;
 
     ll_message_info_t msg_info =
     {
@@ -156,19 +157,36 @@ void MainWindow::readData()
 
     size_t remainder;
     uint16_t tmp[3];
+    ll_status_t status;
 
-    if(LL_STATUS_SUCCESS == ll_deserialize(msg_info, (uint8_t*)data.data(), data.size(), (uint8_t*)&tmp, &remainder))
+    while (0 < qByte_less.size())
     {
-        GraphWindow->Build_Graphic_Left(tmp[0]);
-        GraphWindow->Build_Graphic_Center(tmp[2]);
-        GraphWindow->Build_Graphic_Right(tmp[1]);
-        //implement emitting tmp[1] and tmp[2]
+        status = ll_deserialize(msg_info, (uint8_t*)qByte_less.data(), qByte_less.size(), (uint8_t*)tmp, &remainder);
 
+        if(LL_STATUS_SUCCESS == status)
+        {
+            textEditor->putUint16(tmp);
+
+            if (0 == remainder)
+            {
+                qByte_less.clear();
+            }
+            else
+            {
+                qByte_less.remove(0, remainder);
+            }
+        }
+        else {
+           break;
+        }
     }
 }
-//! [7]
 
-//! [8]
+void MainWindow::saveData()
+{
+   // QFileDialog>
+}
+
 void MainWindow::handleError(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError) {

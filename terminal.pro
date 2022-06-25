@@ -8,28 +8,16 @@ TARGET = terminal
 TEMPLATE = app
 
 SOURCES += \
-    Graphic/Analiz.cpp \
-    Graphic/Control_Graf.cpp \
-    Graphic/Data_Graf.cpp \
-    Graphic/Graphic_Widget.cpp \
-    Graphic/graphic.cpp \
-    graphic_window.cpp \
+    TextEditor.cpp \
     ll_protocol/ll_protocol.c \
     main.cpp \
-    main_window.cpp \
     mainwindow.cpp \
     settingsdialog.cpp \
     console.cpp
 
 HEADERS += \
-    Graphic/Analiz.h \
-    Graphic/Control_Graf.h \
-    Graphic/Data_Graf.h \
-    Graphic/Graphic_Widget.h \
-    Graphic/graphic.h \
-    graphic_window.h \
+    TextEditor.h \
     ll_protocol/ll_protocol.h \
-    main_window.h \
     mainwindow.h \
     settingsdialog.h \
     console.h \
