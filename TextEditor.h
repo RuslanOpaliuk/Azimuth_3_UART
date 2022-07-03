@@ -69,7 +69,7 @@ public:
     TextEditor();
 
     void loadFile(const QString &fileName);
-    void putUint16(const uint16_t *data);
+    void putUint16(const struct timeval, const uint16_t *data);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -84,6 +84,7 @@ private slots:
 #ifndef QT_NO_SESSIONMANAGER
     void commitData(QSessionManager &);
 #endif
+    void clearData();
 
 private:
     void createActions();

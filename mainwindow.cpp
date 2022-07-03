@@ -36,7 +36,6 @@
 #include "ui_mainwindow.h"
 #include "console.h"
 #include "settingsdialog.h"
-
 #include <QMessageBox>
 #include <QtSerialPort/QSerialPort>
 #include <QDebug>
@@ -53,6 +52,8 @@ MainWindow::MainWindow(QString title, QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle(title);
+
+    tv = {0, 0};
 
     console = new Console;
     console->setEnabled(false);
@@ -72,6 +73,9 @@ MainWindow::MainWindow(QString title, QWidget *parent) :
 
     initActionsConnections();
 
+    multiChart = new RealTimeMultiChart();
+    multiChart->show();
+
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)));
     connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
 
@@ -82,6 +86,7 @@ MainWindow::~MainWindow()
 {
     delete settings;
     delete ui;
+    delete multiChart;
 }
 
 //! [4]
@@ -163,9 +168,12 @@ void MainWindow::readData()
     {
         status = ll_deserialize(msg_info, (uint8_t*)qByte_less.data(), qByte_less.size(), (uint8_t*)tmp, &remainder);
 
+        tv.tv_usec += 10;
+
         if(LL_STATUS_SUCCESS == status)
         {
-            textEditor->putUint16(tmp);
+            textEditor->putUint16(tv, tmp);
+            multiChart->drawChart(tv, tmp);
 
             if (0 == remainder)
             {
@@ -176,8 +184,18 @@ void MainWindow::readData()
                 qByte_less.remove(0, remainder);
             }
         }
-        else {
-           break;
+        else if (LL_STATUS_NO_MESSAGE == status)
+        {
+            qByte_less.remove(0, remainder);
+            break;
+        }
+        else if (LL_STATUS_MESSAGE_TOO_SHORT == status || LL_STATUS_MESSAGE_TOO_LONG == status)
+        {
+            qByte_less.remove(0, remainder);
+        }
+        else if (LL_STATUS_NO_ENOUGH_BYTES == status)
+        {
+            break;
         }
     }
 }
@@ -204,6 +222,7 @@ void MainWindow::initActionsConnections()
     connect(ui->actionConfigure, SIGNAL(triggered()), settings, SLOT(show()));
     connect(ui->actionClear, SIGNAL(triggered()), console, SLOT(clear()));
     connect(ui->actionClear, SIGNAL(triggered()), this, SLOT(Clear_Slot()));
+    connect(ui->actionClear, SIGNAL(triggered()), textEditor, SLOT(clearData()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
@@ -223,4 +242,5 @@ void MainWindow::triger_connect(bool trigger)
 void MainWindow::Clear_Slot()
 {
     emit Clear_Signal();
+    multiChart->clearData();
 }

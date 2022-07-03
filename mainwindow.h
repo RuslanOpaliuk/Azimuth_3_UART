@@ -40,6 +40,8 @@
 #include <QtSerialPort/QSerialPort>
 #include <ll_protocol/ll_protocol.h>
 #include <TextEditor.h>
+#include <time.h>
+#include "realtimemultichart.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -72,13 +74,17 @@ private slots:
 private:
     void initActionsConnections();
     QByteArray qByte_less;
-private:
+
     Ui::MainWindow *ui;
     Console *console;
     TextEditor *textEditor;
 
     SettingsDialog *settings;
     QSerialPort *serial;
+
+    RealTimeMultiChart *multiChart;
+
+    struct timeval tv;
 
 signals:
     void DrawDataLeft(uint16_t);

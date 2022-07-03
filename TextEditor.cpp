@@ -141,6 +141,11 @@ bool TextEditor::saveAs()
 }
 //! [12]
 
+void TextEditor::clearData()
+{
+    textEdit->document()->clear();
+}
+
 //! [13]
 void TextEditor::about()
 //! [13] //! [14]
@@ -413,8 +418,9 @@ void TextEditor::commitData(QSessionManager &manager)
 }
 #endif
 
-void TextEditor::putUint16(const uint16_t *data)
+void TextEditor::putUint16(const struct timeval current_time, const uint16_t *data)
 {
+    textEdit->insertPlainText(QString::number(current_time.tv_sec) + "." + QString::number(current_time.tv_usec) + " ");
     textEdit->insertPlainText(QString::number(data[0]) + " ");
     textEdit->insertPlainText(QString::number(data[1]) + " ");
     textEdit->insertPlainText(QString::number(data[2]) + " ");

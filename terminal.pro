@@ -12,13 +12,19 @@ SOURCES += \
     ll_protocol/ll_protocol.c \
     main.cpp \
     mainwindow.cpp \
+    qchartviewer.cpp \
+    realtimemultichart.cpp \
     settingsdialog.cpp \
     console.cpp
 
 HEADERS += \
     TextEditor.h \
+    bchartdir.h \
+    chartdir.h \
     ll_protocol/ll_protocol.h \
     mainwindow.h \
+    qchartviewer.h \
+    realtimemultichart.h \
     settingsdialog.h \
     console.h \
     version.h
@@ -34,3 +40,8 @@ RC_FILE = myapp.rc
 
 OTHER_FILES += \
     myapp.rc
+
+unix:!macx: LIBS += -L$$PWD/lib/ -lchartdir
+
+INCLUDEPATH += $$PWD/.
+DEPENDPATH += $$PWD/.
