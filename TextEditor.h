@@ -70,6 +70,8 @@ public:
 
     void loadFile(const QString &fileName);
     void putUint16(const struct timeval, const uint16_t *data);
+    void putCoord(const quint8 detector, const float Latitude, const float Longitude);
+    void putTime(const quint8 detector, const quint8 Hour, const quint8 Minute, const quint8 Seconds, const quint16 microSecond);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

@@ -38,10 +38,12 @@
 #include <QtCore/QtGlobal>
 #include <QMainWindow>
 #include <QtSerialPort/QSerialPort>
-#include <ll_protocol/ll_protocol.h>
+#include <ll_protocol/sources/ll_protocol.h>
+#include <ll_protocol/sources/ll_Message.h>
 #include <TextEditor.h>
 #include <time.h>
 #include "realtimemultichart.h"
+#include "base_station_coord.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -85,7 +87,7 @@ private:
     RealTimeMultiChart *multiChart;
 
     struct timeval tv;
-
+    Base_Station_Coord *BS_Coord;
 signals:
     void DrawDataLeft(uint16_t);
     void DrawDataCenter(uint16_t);

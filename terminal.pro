@@ -4,12 +4,16 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     include($$QTSERIALPORT_PROJECT_ROOT/src/serialport/qt4support/serialport.prf)
 }
 
+QT += charts
 TARGET = terminal
 TEMPLATE = app
 
 SOURCES += \
     TextEditor.cpp \
-    ll_protocol/ll_protocol.c \
+    base_station_coord.cpp \
+    callout.cpp \
+    ll_protocol/sources/ll_Message.c \
+    ll_protocol/sources/ll_protocol.c \
     main.cpp \
     mainwindow.cpp \
     qchartviewer.cpp \
@@ -19,9 +23,12 @@ SOURCES += \
 
 HEADERS += \
     TextEditor.h \
+    base_station_coord.h \
     bchartdir.h \
+    callout.h \
     chartdir.h \
-    ll_protocol/ll_protocol.h \
+    ll_protocol/sources/ll_Message.h \
+    ll_protocol/sources/ll_protocol.h \
     mainwindow.h \
     qchartviewer.h \
     realtimemultichart.h \

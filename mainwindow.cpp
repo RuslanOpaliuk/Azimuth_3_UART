@@ -36,6 +36,7 @@
 #include "ui_mainwindow.h"
 #include "console.h"
 #include "settingsdialog.h"
+
 #include <QMessageBox>
 #include <QtSerialPort/QSerialPort>
 #include <QDebug>
@@ -45,6 +46,7 @@
 #include <QTextStream>
 #include <QFileDialog>
 
+QT_CHARTS_USE_NAMESPACE
 //! [0]
 MainWindow::MainWindow(QString title, QWidget *parent) :
     QMainWindow(parent),
@@ -75,6 +77,9 @@ MainWindow::MainWindow(QString title, QWidget *parent) :
 
     multiChart = new RealTimeMultiChart();
     multiChart->show();
+
+    BS_Coord = new Base_Station_Coord();
+    BS_Coord->show();
 
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)));
     connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
@@ -161,23 +166,68 @@ void MainWindow::readData()
     };
 
     size_t remainder;
-    uint16_t tmp[3];
+    uint8_t tmp[100] = {0};
     ll_status_t status;
+
+    ll_message_info_t message_for_deserialize[] = {msg_info, s_TimeInfo, s_CoordInfo};
+
+    const quint8 u8_DeserializeSize = sizeof(message_for_deserialize)/sizeof(ll_message_info_t);
+
+    Coordinate s_Coordinate;
+    Time s_Time;
 
     while (0 < qByte_less.size())
     {
-        status = ll_deserialize(msg_info, (uint8_t*)qByte_less.data(), qByte_less.size(), (uint8_t*)tmp, &remainder);
+        int j = u8_DeserializeSize;
+
+        for (int i = 0; i < u8_DeserializeSize; i++)
+        {
+            if ((quint8)message_for_deserialize[i].begin_byte == (quint8)qByte_less.data()[0])
+            {
+                j = i;
+                break;
+            }
+        }
+
+        if (u8_DeserializeSize == j)
+        {
+            qByte_less.remove(0, 1);
+            continue;
+        }
+
+        status = ll_deserialize(message_for_deserialize[j], (uint8_t*)qByte_less.data(), qByte_less.size(), tmp, &remainder);
 
         tv.tv_usec += 10;
 
         if(LL_STATUS_SUCCESS == status)
         {
-            textEditor->putUint16(tv, tmp);
-            multiChart->drawChart(tv, tmp);
+            if (0xAA == message_for_deserialize[j].begin_byte)
+            {
+                uint16_t sound = tmp[0];
+                sound <<= 8;
+                sound |= tmp[1];
+                textEditor->putUint16(tv, &sound);
+
+                continue;
+            }
+
+            if (s_TimeInfo.begin_byte == message_for_deserialize[j].begin_byte)
+            {
+                s_Time = s_ParseTimeMessage(tmp);
+                textEditor->putTime(s_Time.u8_detector, s_Time.u8_Hour, s_Time.u8_Minute, s_Time.u8_Second, s_Time.u16_microSecond);
+            }
+
+            if (s_CoordInfo.begin_byte == message_for_deserialize[j].begin_byte)
+            {
+                s_Coordinate = s_ParseCoordMessage(tmp);
+                BS_Coord->mooveDetector(s_Coordinate.u8_detector, s_Coordinate.f_Latitude, s_Coordinate.f_Longitude);
+                textEditor->putCoord(s_Coordinate.u8_detector, s_Coordinate.f_Latitude, s_Coordinate.f_Longitude);
+            }
 
             if (0 == remainder)
             {
                 qByte_less.clear();
+                data.clear();
             }
             else
             {
