@@ -45,6 +45,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QFileDialog>
+#include <QtCharts/QChartView>
 
 QT_CHARTS_USE_NAMESPACE
 //! [0]
@@ -75,15 +76,14 @@ MainWindow::MainWindow(QString title, QWidget *parent) :
 
     initActionsConnections();
 
-    multiChart = new RealTimeMultiChart();
-    multiChart->show();
-
     BS_Coord = new Base_Station_Coord();
     BS_Coord->show();
 
+    SoundGraphic = new SoundGraph();
+    SoundGraphic->show();
+
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)));
     connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
-
 }
 //! [3]
 
@@ -91,7 +91,6 @@ MainWindow::~MainWindow()
 {
     delete settings;
     delete ui;
-    delete multiChart;
 }
 
 //! [4]
@@ -157,24 +156,17 @@ void MainWindow::readData()
 
     qByte_less += data;
 
-    ll_message_info_t msg_info =
-    {
-        .size = 6,
-        .begin_byte = 0xAA,
-        .reject_byte = 0xCC,
-        .end_byte = 0xBB
-    };
-
     size_t remainder;
     uint8_t tmp[100] = {0};
     ll_status_t status;
 
-    ll_message_info_t message_for_deserialize[] = {msg_info, s_TimeInfo, s_CoordInfo};
+    ll_message_info_t message_for_deserialize[] = {s_TimeInfo, s_CoordInfo, s_SoundInfo};
 
     const quint8 u8_DeserializeSize = sizeof(message_for_deserialize)/sizeof(ll_message_info_t);
 
     Coordinate s_Coordinate;
     Time s_Time;
+    Sound s_Sound;
 
     while (0 < qByte_less.size())
     {
@@ -201,20 +193,23 @@ void MainWindow::readData()
 
         if(LL_STATUS_SUCCESS == status)
         {
-            if (0xAA == message_for_deserialize[j].begin_byte)
+            if (s_SoundInfo.begin_byte == message_for_deserialize[j].begin_byte)
             {
-                uint16_t sound = tmp[0];
-                sound <<= 8;
-                sound |= tmp[1];
-                textEditor->putUint16(tv, &sound);
-
-                continue;
+                s_Sound = s_ParseSoundMessage(tmp);
+                textEditor->putSound(s_Sound.u8_detector, s_Sound.u16_Power);
+                SoundGraphic->DrawSound(s_Sound.u8_detector, d_detectorTime[s_Sound.u8_detector], s_Sound.u16_Power);
+                d_detectorTime[s_Sound.u8_detector] += 0.000005;
             }
 
             if (s_TimeInfo.begin_byte == message_for_deserialize[j].begin_byte)
             {
                 s_Time = s_ParseTimeMessage(tmp);
                 textEditor->putTime(s_Time.u8_detector, s_Time.u8_Hour, s_Time.u8_Minute, s_Time.u8_Second, s_Time.u16_microSecond);
+
+                double Time = (s_Time.u8_Hour*60*60) + (s_Time.u8_Minute*60) + s_Time.u8_Second;
+                Time += double(s_Time.u16_microSecond) / 100000;
+
+                d_detectorTime[s_Time.u8_detector] = Time;
             }
 
             if (s_CoordInfo.begin_byte == message_for_deserialize[j].begin_byte)
@@ -292,5 +287,5 @@ void MainWindow::triger_connect(bool trigger)
 void MainWindow::Clear_Slot()
 {
     emit Clear_Signal();
-    multiChart->clearData();
+    SoundGraphic->clear();
 }

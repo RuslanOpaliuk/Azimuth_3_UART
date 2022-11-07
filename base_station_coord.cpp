@@ -18,7 +18,7 @@ Base_Station_Coord::Base_Station_Coord(QWidget *parent) :
     detector_series->setMarkerSize(15.0);
     detector_series->setColor(0x008800);
 
-    *(detector_series) << QPointF(49.0994, 23.5731) << QPointF(49.83559, 24.03214) << QPointF(49.81633, 24.07918);
+    *(detector_series) << QPointF(49.18, 31.87) << QPointF(49.19, 31.90) << QPointF(49.17, 31.88);
 
     detector_series->setPen(QColor(Qt::transparent));
 
@@ -56,22 +56,7 @@ void Base_Station_Coord::resizeEvent(QResizeEvent *event)
 
 void Base_Station_Coord::mooveDetector(quint8 detector,  double Latitude, double Longitude)
 {
-    int X1 = (int)Latitude/100;
-    int Y1 = (int)Longitude/100;
-
-    X1 *= 100;
-    Y1 *= 100;
-
-    double X = Latitude - X1;
-    double Y = Longitude - Y1;
-
-    X = X/60;
-    Y = Y/60;
-
-    X += (int)Latitude/100;
-    Y += (int)Longitude/100;
-
-    detector_series->replace(detector, X, Y);
+    detector_series->replace(detector, Latitude, Longitude);
 }
 
 bool Base_Station_Coord::viewportEvent(QEvent *event)

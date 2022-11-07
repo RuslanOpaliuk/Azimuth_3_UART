@@ -42,8 +42,8 @@
 #include <ll_protocol/sources/ll_Message.h>
 #include <TextEditor.h>
 #include <time.h>
-#include "realtimemultichart.h"
 #include "base_station_coord.h"
+#include "sound_graph.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -84,10 +84,11 @@ private:
     SettingsDialog *settings;
     QSerialPort *serial;
 
-    RealTimeMultiChart *multiChart;
-
     struct timeval tv;
     Base_Station_Coord *BS_Coord;
+    SoundGraph *SoundGraphic;
+
+    double d_detectorTime[3] = {0.0, 0.0, 0.0};
 signals:
     void DrawDataLeft(uint16_t);
     void DrawDataCenter(uint16_t);

@@ -433,11 +433,22 @@ void TextEditor::putUint16(const struct timeval current_time, const uint16_t *da
 void TextEditor::putCoord(const quint8 detector, const float Latitude, const float Longitude)
 {
     textEdit->insertPlainText("Coord: " + QString::number(detector) + " " + QString::number(Latitude, 'g', 8) + " " + QString::number(Longitude, 'g', 8) + "\n");
+    QScrollBar *bar = textEdit->verticalScrollBar();
+    bar->setValue(bar->maximum());
 }
 
 void TextEditor::putTime(const quint8 detector, const quint8 Hour, const quint8 Minute, const quint8 Seconds, const quint16 microSecond)
 {
     textEdit->insertPlainText("Time: " + QString::number(detector) + " " + QString::number(Hour) + ":"
                                        + QString::number(Minute)   + ":" + QString::number(Seconds) + ","
-                                       + QString::number(microSecond) + "\n");
+                                       + QString::number(microSecond).rightJustified(5, '0') + "\n");
+    QScrollBar *bar = textEdit->verticalScrollBar();
+    bar->setValue(bar->maximum());
+}
+
+void TextEditor::putSound(const quint8 detector, const quint16 u16_Power)
+{
+    textEdit->insertPlainText("Sound: " + QString::number(detector) + " " + QString::number(u16_Power) + "\n");
+    QScrollBar *bar = textEdit->verticalScrollBar();
+    bar->setValue(bar->maximum());
 }

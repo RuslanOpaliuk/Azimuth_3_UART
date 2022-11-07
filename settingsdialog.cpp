@@ -114,6 +114,7 @@ void SettingsDialog::fillPortsParameters()
     ui->baudRateBox->addItem(QStringLiteral("19200"), QSerialPort::Baud19200);
     ui->baudRateBox->addItem(QStringLiteral("38400"), QSerialPort::Baud38400);
     ui->baudRateBox->addItem(QStringLiteral("115200"), QSerialPort::Baud115200);
+    ui->baudRateBox->addItem(QStringLiteral("921600"), 921600);
      ui->baudRateBox->addItem(QStringLiteral("2000000"), 2000000);
     ui->baudRateBox->addItem(QStringLiteral("Custom"));
 
