@@ -215,8 +215,8 @@ void MainWindow::readData()
             if (s_CoordInfo.begin_byte == message_for_deserialize[j].begin_byte)
             {
                 s_Coordinate = s_ParseCoordMessage(tmp);
-                BS_Coord->mooveDetector(s_Coordinate.u8_detector, s_Coordinate.f_Latitude, s_Coordinate.f_Longitude);
-                textEditor->putCoord(s_Coordinate.u8_detector, s_Coordinate.f_Latitude, s_Coordinate.f_Longitude);
+                BS_Coord->mooveDetector(s_Coordinate.u8_detector, s_Coordinate.f_Longitude, s_Coordinate.f_Latitude);
+                textEditor->putCoord(s_Coordinate.u8_detector, s_Coordinate.f_Longitude, s_Coordinate.f_Latitude);
             }
 
             if (0 == remainder)
@@ -247,7 +247,7 @@ void MainWindow::readData()
 
 void MainWindow::saveData()
 {
-   // QFileDialog>
+
 }
 
 void MainWindow::handleError(QSerialPort::SerialPortError error)
@@ -288,4 +288,26 @@ void MainWindow::Clear_Slot()
 {
     emit Clear_Signal();
     SoundGraphic->clear();
+
+    BS_Coord->mooveDetector(0, 23.5164367, 50.081694);
+    BS_Coord->mooveDetector(1, 23.5095169, 50.0847046);
+    BS_Coord->mooveDetector(2, 23.5091296, 50.079602);
+
+    Time s_Time[3];
+
+    /*
+typedef struct Time{
+    uint8_t u8_detector;
+    uint8_t u8_Hour;
+    uint8_t u8_Minute;
+    uint8_t u8_Second;
+    uint16_t u16_microSecond;
+}Time;
+     * */
+
+    s_Time[0] = {(uint8_t)0, (uint8_t)13, (uint8_t)5, (uint8_t)30, (uint16_t)7848};
+    s_Time[1] = {(uint8_t)1, (uint8_t)13, (uint8_t)5, (uint8_t)31, (uint16_t)545};
+    s_Time[2] = {(uint8_t)2, (uint8_t)13, (uint8_t)5, (uint8_t)30, (uint16_t)0};
+
+    BS_Coord->setTimeDiff(s_Time);
 }
