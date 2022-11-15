@@ -28,6 +28,7 @@ private:
     const quint32 distance = 10000;
     const quint16 sound_speed = (quint16)330;
 
+    qreal CalcAngle(qreal r_XDistance, qreal r_YDistance, qreal r_SoundDiff, qreal r_Azimuth);
     QPointF CalcDirection(QPointF pointFirst, QPointF pointSecond, QPointF pointThird, qreal r_PoinsDiff, qreal r_SideDiff);
     void calculate(qreal ML_Diff, qreal MR_Diff, qreal LR_Diff);
     bool m_isTouching;
