@@ -16,7 +16,7 @@ Base_Station_Coord::Base_Station_Coord(QWidget *parent) :
     QPointF Right = QPointF(23.5155868, 50.0797319);
     QPointF Middle = QPointF(23.5155868, 50.0797319);
 
-    QPointF Target = QPointF(23.5556867, 50.0272181);
+    QPointF Target = QPointF(23.4344737, 50.0606081);
 
     QPointF Middle_Left = QPointF((Middle.x()+Left.x())/2, (Middle.y()+Left.y())/2);
     QPointF Middle_Right = QPointF((Middle.x()+Right.x())/2, (Middle.y()+Right.y())/2);
@@ -130,7 +130,21 @@ void Base_Station_Coord::setTimeDiff(Time *s_Time)
     LR_Diff += (s_Time[0].u8_Second - s_Time[1].u8_Second);
     LR_Diff *= sound_speed;
 
-    calculate(34, -485, -519);
+    calculate(-572, -256, 316);
+}
+
+qreal Base_Station_Coord::CorrectAngle(qreal q_Angle)
+{
+    if ((2 * M_PI) <= q_Angle)
+    {
+        q_Angle -= (2 * M_PI);
+    }
+    else if (0 >= q_Angle)
+    {
+        q_Angle += (2 * M_PI);
+    }
+
+    return q_Angle;
 }
 
 qreal Base_Station_Coord::CalcAngle(qreal r_XDistance, qreal r_YDistance, qreal r_SoundDiff, qreal r_Azimuth)
@@ -159,44 +173,61 @@ qreal Base_Station_Coord::CalcAngle(qreal r_XDistance, qreal r_YDistance, qreal 
     return q_Angle;
 }
 
-QPointF Base_Station_Coord::CalcDirection(QPointF pointFirst, QPointF pointSecond, QPointF pointThird, qreal r_PoinsDiff, qreal r_SideDiff)
+QPointF Base_Station_Coord::CalcDirection(QPointF pointFirst, QPointF pointSecond, QPointF pointThird, qreal r_PoinsDiff, qreal r_FirstSecondDiff, qreal r_SecondThirdDiff)
 {
     qreal r_XDistance = qDegreesToRadians(pointFirst.x() - pointSecond.x())*cos(qDegreesToRadians(pointFirst.y()));
     qreal r_YDistance = qDegreesToRadians(pointFirst.y() - pointSecond.y());
     qreal r_PointDistance = qSqrt((r_XDistance*r_XDistance) + (r_YDistance*r_YDistance))*R;
-    qreal r_BaseAngle = qAtan(r_XDistance/r_YDistance);
 
+    qreal r_BaseAngle = qAtan(r_XDistance/r_YDistance);
     r_BaseAngle = CalcAngle(r_XDistance, r_YDistance, r_PoinsDiff, r_BaseAngle);
 
-    qreal r_TargetAngle = M_PI_2 - qAbs(r_PoinsDiff/r_PointDistance);
-    qreal r_MiddleLong = (pointFirst.x() + pointSecond.x())/2;
-    qreal r_MiddleLat  = (pointFirst.y() + pointSecond.y())/2;
+    r_PoinsDiff = qAbs(r_PoinsDiff);
+    qreal r_TargetAngle = M_PI_2;
 
-    r_XDistance = qDegreesToRadians(pointSecond.x() - pointThird.x())*cos(qDegreesToRadians(pointSecond.y()));
-    r_YDistance = qDegreesToRadians(pointSecond.y() - pointThird.y());
-    qreal r_SideAngle = qAtan(r_XDistance/r_YDistance);
-
-    r_SideAngle = CalcAngle(r_XDistance, r_YDistance, r_SideDiff, r_SideAngle);
-
-    qreal q_DiffMinus = r_BaseAngle - r_TargetAngle;
-    qreal q_DiffPlus = r_BaseAngle + r_TargetAngle;
-
-    q_DiffMinus = qAbs(q_DiffMinus - r_SideAngle);
-    q_DiffPlus = qAbs(q_DiffPlus - r_SideAngle);
-
-    if (q_DiffMinus <= q_DiffPlus)
+    if (r_PoinsDiff < r_PointDistance)
     {
-        r_TargetAngle = r_BaseAngle - r_TargetAngle;
+        r_TargetAngle -= qAsin(r_PoinsDiff/r_PointDistance);
+
+    //////////////////////////////////////////////////////////////////////////////////
+        r_XDistance = qDegreesToRadians(pointFirst.x() - pointThird.x())*cos(qDegreesToRadians(pointFirst.y()));
+        r_YDistance = qDegreesToRadians(pointFirst.y() - pointThird.y());
+        qreal r_FirstCortAngle = qAtan(r_XDistance/r_YDistance);
+
+        r_FirstCortAngle = CalcAngle(r_XDistance, r_YDistance, r_FirstSecondDiff, r_FirstCortAngle);
+    //////////////////////////////////////////////////////////////////////////////////
+        r_XDistance = qDegreesToRadians(pointSecond.x() - pointThird.x())*cos(qDegreesToRadians(pointSecond.y()));
+        r_YDistance = qDegreesToRadians(pointSecond.y() - pointThird.y());
+        qreal r_SecondCortAngle = qAtan(r_XDistance/r_YDistance);
+
+        r_SecondCortAngle = CalcAngle(r_XDistance, r_YDistance, r_SecondThirdDiff, r_SecondCortAngle);
+    //////////////////////////////////////////////////////////////////////////////////
+        qreal q_CordAngle = (r_FirstCortAngle + r_SecondCortAngle)/2;
+
+        qreal r_DiffMinus = CorrectAngle(r_BaseAngle - r_TargetAngle);
+        r_DiffMinus = qAbs(r_DiffMinus - q_CordAngle);
+
+        qreal r_DiffPlus = CorrectAngle(r_BaseAngle + r_TargetAngle);
+        r_DiffPlus = qAbs(r_DiffPlus - q_CordAngle);
+
+        if (r_DiffMinus <= r_DiffPlus)
+        {
+            r_TargetAngle = r_BaseAngle - r_TargetAngle;
+        }
+        else
+        {
+            r_TargetAngle = r_BaseAngle + r_TargetAngle;
+        }
+
+        r_TargetAngle = CorrectAngle(r_TargetAngle);
     }
     else
     {
-        r_TargetAngle = r_BaseAngle + r_TargetAngle;
+        r_TargetAngle = r_BaseAngle;
     }
 
-    if ((2 * M_PI) <= r_TargetAngle)
-    {
-        r_TargetAngle -= (2 * M_PI);
-    }
+    qreal r_MiddleLong = (pointFirst.x() + pointSecond.x())/2;
+    qreal r_MiddleLat  = (pointFirst.y() + pointSecond.y())/2;
 
     r_XDistance = distance*qSin(r_TargetAngle);
     r_YDistance = distance*qCos(r_TargetAngle);
@@ -217,13 +248,13 @@ void Base_Station_Coord::calculate(qreal ML_Diff, qreal MR_Diff, qreal LR_Diff)
     QPointF Right = detector_series->at(1);
     QPointF Middle = detector_series->at(2);
 
-    QPointF Z1 = CalcDirection(Middle, Left, Right, ML_Diff, LR_Diff);
+    QPointF Z1 = CalcDirection(Middle, Left, Right, ML_Diff, MR_Diff, LR_Diff);
     ML_Target_Line->append(Z1);
 
-    QPointF Z2 = CalcDirection(Middle, Right, Left, MR_Diff, -LR_Diff);
+    QPointF Z2 = CalcDirection(Middle, Right, Left, MR_Diff, ML_Diff, -LR_Diff);
     MR_Target_Line->append(Z2);
 
-    QPointF Z3 = CalcDirection(Left, Right, Middle, LR_Diff, -MR_Diff);
+    QPointF Z3 = CalcDirection(Left, Right, Middle, LR_Diff, -ML_Diff, -MR_Diff);
     LR_Target_Line->append(Z3);
 }
 
