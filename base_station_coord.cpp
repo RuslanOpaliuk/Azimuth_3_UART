@@ -16,7 +16,7 @@ Base_Station_Coord::Base_Station_Coord(QWidget *parent) :
     QPointF Right = QPointF(23.5155868, 50.0797319);
     QPointF Middle = QPointF(23.5155868, 50.0797319);
 
-    QPointF Target = QPointF(23.4344737, 50.0606081);
+    QPointF Target = QPointF(23.5900122, 50.0608949);
 
     QPointF Middle_Left = QPointF((Middle.x()+Left.x())/2, (Middle.y()+Left.y())/2);
     QPointF Middle_Right = QPointF((Middle.x()+Right.x())/2, (Middle.y()+Right.y())/2);
@@ -130,7 +130,7 @@ void Base_Station_Coord::setTimeDiff(Time *s_Time)
     LR_Diff += (s_Time[0].u8_Second - s_Time[1].u8_Second);
     LR_Diff *= sound_speed;
 
-    calculate(-572, -256, 316);
+    calculate(399, -190, -589);
 }
 
 qreal Base_Station_Coord::CorrectAngle(qreal q_Angle)
@@ -202,13 +202,25 @@ QPointF Base_Station_Coord::CalcDirection(QPointF pointFirst, QPointF pointSecon
 
         r_SecondCortAngle = CalcAngle(r_XDistance, r_YDistance, r_SecondThirdDiff, r_SecondCortAngle);
     //////////////////////////////////////////////////////////////////////////////////
-        qreal q_CordAngle = (r_FirstCortAngle + r_SecondCortAngle)/2;
+        if (qAbs(r_SecondCortAngle - r_FirstCortAngle) > M_PI)
+        {
+            if (r_FirstCortAngle < r_SecondCortAngle)
+            {
+                r_FirstCortAngle += 2*M_PI;
+            }
+            else
+            {
+                r_SecondCortAngle += 2*M_PI;
+            }
+        }
+        qreal q_CortAngle = (r_FirstCortAngle*qAbs(r_FirstSecondDiff) + r_SecondCortAngle*qAbs(r_SecondThirdDiff))/(qAbs(r_FirstSecondDiff) + qAbs(r_SecondThirdDiff));
 
+    //////////////////////////////////////////////////////////////////////////////////
         qreal r_DiffMinus = CorrectAngle(r_BaseAngle - r_TargetAngle);
-        r_DiffMinus = qAbs(r_DiffMinus - q_CordAngle);
+        r_DiffMinus = qAbs(r_DiffMinus - q_CortAngle);
 
         qreal r_DiffPlus = CorrectAngle(r_BaseAngle + r_TargetAngle);
-        r_DiffPlus = qAbs(r_DiffPlus - q_CordAngle);
+        r_DiffPlus = qAbs(r_DiffPlus - q_CortAngle);
 
         if (r_DiffMinus <= r_DiffPlus)
         {
